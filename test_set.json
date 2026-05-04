@@ -1,3 +1,22 @@
 [
-  {"question": "hihi cả nhà tự tạo testset bằng cơm nhé", "ground_truth": "Không kịp tạo luôn"},
+  {
+    "question": "Nhân viên được nghỉ phép bao nhiêu ngày?",
+    "ground_truth": "Nhân viên chính thức được nghỉ phép năm 12 ngày làm việc mỗi năm."
+  },
+  {
+    "question": "Thời gian thử việc là bao lâu?",
+    "ground_truth": "Thời gian thử việc là 60 ngày."
+  },
+  {
+    "question": "Quy định về nghỉ ốm như thế nào?",
+    "ground_truth": "Nhân viên được nghỉ ốm tối đa 5 ngày một năm có hưởng lương nếu có giấy xác nhận của bệnh viện."
+  },
+  {
+    "question": "Có thể mang thú cưng đi làm không?",
+    "ground_truth": "Không có thông tin."
+  },
+  {
+    "question": "Lương thử việc là bao nhiêu phần trăm?",
+    "ground_truth": "Nhân viên nhận 85% lương cơ bản."
+  }
 ]

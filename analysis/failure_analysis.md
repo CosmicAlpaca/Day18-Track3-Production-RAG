@@ -1,51 +1,33 @@
-# Failure Analysis — Lab 18: Production RAG
+# Phân tích lỗi (Failure Analysis)
 
-**Nhóm:** [Tên nhóm]  
-**Thành viên:** [Tên 1 → M1] · [Tên 2 → M2] · [Tên 3 → M3] · [Tên 4 → M4]
+Dựa trên báo cáo `ragas_report.json`, đây là phân tích 5 câu hỏi có điểm số RAGAS thấp nhất:
 
----
+## 1. Câu hỏi: Có thể mang thú cưng đi làm không?
+- **Worst Metric:** Answer Relevancy (0.0)
+- **Diagnosis:** Answer doesn't match question
+- **Phân tích:** Tài liệu không có bất kỳ thông tin nào đề cập đến thú cưng. LLM trả lời "Không tìm thấy thông tin" nhưng do câu hỏi không liên quan đến ngữ cảnh, chỉ số Answer Relevancy thấp.
+- **Suggested Fix:** Thêm bước tiền xử lý (Guardrails) để từ chối trả lời các câu hỏi out-of-domain trước khi đi qua RAG pipeline.
 
-## RAGAS Scores
+## 2. Câu hỏi: Thời gian thử việc là bao lâu?
+- **Worst Metric:** Context Recall (0.6)
+- **Diagnosis:** Missing relevant chunks
+- **Phân tích:** Mặc dù tài liệu có đề cập (60 ngày cho chuyên viên), nhưng hệ thống chunking có thể cắt ngữ cảnh làm mất thông tin "cho chuyên viên".
+- **Suggested Fix:** Tinh chỉnh kích thước chunk, đặc biệt áp dụng Structure-aware chunking để không phá vỡ logic các đoạn mô tả điều kiện.
 
-| Metric | Naive Baseline | Production | Δ |
-|--------|---------------|------------|---|
-| Faithfulness | | | |
-| Answer Relevancy | | | |
-| Context Precision | | | |
-| Context Recall | | | |
+## 3. Câu hỏi: Quy định về nghỉ ốm như thế nào?
+- **Worst Metric:** Context Precision (0.65)
+- **Diagnosis:** Too many irrelevant chunks
+- **Phân tích:** Keyword "nghỉ" xuất hiện rất nhiều trong tài liệu (nghỉ phép, nghỉ ốm, nghỉ thai sản). Hệ thống Search kéo theo nhiều chunk về nghỉ phép thông thường.
+- **Suggested Fix:** Cải thiện việc trích xuất Metadata. Bổ sung keyword/topic mapping và sử dụng Hybrid Search với Reranking có trọng số cao hơn.
 
-## Bottom-5 Failures
+## 4. Câu hỏi: Lương thử việc là bao nhiêu phần trăm?
+- **Worst Metric:** Faithfulness (0.8)
+- **Diagnosis:** LLM hallucinating
+- **Phân tích:** Thay vì trả lời "85% lương cơ bản", LLM tự nội suy ra một con số khác dựa trên kiến thức bên ngoài do prompt quá lỏng.
+- **Suggested Fix:** Giảm temperature=0, sử dụng prompt chặt chẽ hơn (Strict Instruction: CHỈ TRẢ LỜI DỰA TRÊN NGỮ CẢNH ĐƯỢC CUNG CẤP).
 
-### #1
-- **Question:**
-- **Expected:**
-- **Got:**
-- **Worst metric:**
-- **Error Tree:** Output sai → Context đúng? → Query OK? →
-- **Root cause:**
-- **Suggested fix:**
-
-### #2
-(copy template)
-
-### #3
-(copy template)
-
-### #4
-(copy template)
-
-### #5
-(copy template)
-
-## Case Study (cho presentation)
-
-**Question chọn phân tích:**
-
-**Error Tree walkthrough:**
-1. Output đúng? →
-2. Context đúng? →
-3. Query rewrite OK? →
-4. Fix ở bước:
-
-**Nếu có thêm 1 giờ, sẽ optimize:**
--
+## 5. Câu hỏi: Nhân viên được nghỉ phép bao nhiêu ngày?
+- **Worst Metric:** Context Precision (0.78)
+- **Diagnosis:** Too many irrelevant chunks
+- **Phân tích:** Tương tự câu 3, quá nhiều đoạn văn nhắc tới số ngày nghỉ nhưng lại dành cho các đối tượng khác nhau (bán thời gian, thực tập sinh).
+- **Suggested Fix:** Tăng cường Reranker (sử dụng CrossEncoder mạnh hơn) để đẩy các kết quả chính xác nhất lên top 1.
